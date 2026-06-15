@@ -3,68 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="refresh" content="14400">
+<meta http-equiv="refresh" content="900">
 <title>Production Queue</title>
 <style>
+
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    background: #0f1117;
-    color: #e8eaf0;
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", sans-serif;
-    min-height: 100vh;
-    padding: 24px;
-  }
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 28px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid #2a2d3a;
-  }
+  body { background: #0f1117; color: #e8eaf0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", sans-serif; min-height: 100vh; padding: 24px; }
+  .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid #2a2d3a; }
   .header-left h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; color: #fff; }
   .header-left p { font-size: 13px; color: #6b7280; margin-top: 3px; }
   .header-stats { display: flex; gap: 20px; }
   .stat { text-align: right; }
   .stat-value { font-size: 22px; font-weight: 700; color: #fff; }
   .stat-label { font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.06em; }
-
   .collection-section { margin-bottom: 36px; }
-  .collection-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 14px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid #2a2d3a;
-  }
-  .collection-name {
-    font-size: 17px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: #7c8cf8;
-  }
+  .collection-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 2px solid #2a2d3a; }
+  .collection-name { font-size: 17px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #7c8cf8; }
   .col-overdue .collection-name { color: #f87171; }
   .col-soon .collection-name { color: #fb923c; }
   .collection-meta { font-size: 12px; color: #4b5563; }
-
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 14px;
-  }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
   .card { background: #1a1d27; border: 1px solid #2a2d3a; border-radius: 12px; overflow: hidden; }
   .card.overdue { border-color: #7f1d1d; background: #1a1212; }
   .card.soon { border-color: #78350f; background: #1a1710; }
-  .card-header {
-    padding: 13px 15px 10px;
-    border-bottom: 1px solid #2a2d3a;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 10px;
-  }
+  .card-header { padding: 13px 15px 10px; border-bottom: 1px solid #2a2d3a; display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
   .card.overdue .card-header { border-bottom-color: #7f1d1d; }
   .card.soon .card-header { border-bottom-color: #78350f; }
   .card-title { font-size: 13px; font-weight: 600; color: #f1f3f9; line-height: 1.35; flex: 1; }
@@ -74,39 +36,140 @@
   .due-badge.overdue { background: #450a0a; color: #f87171; }
   .due-badge.soon { background: #431407; color: #fb923c; }
   .colors { padding: 8px 10px; display: flex; flex-direction: column; gap: 6px; }
-  .color-block { background: #12141e; border: 1px solid #2e3348; border-left: 3px solid #4f6fc4; border-radius: 8px; overflow: hidden; }
+  .color-block { background: #12141e; border: 1px solid #2e3348; border-left: 3px solid #4f6fc4; border-radius: 8px; overflow: hidden; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: opacity 0.15s; }
+  .color-block:active { opacity: 0.7; }
   .color-block.color-overdue { border-color: #5a1a1a; border-left-color: #f87171; background: #130d0d; }
   .color-block.color-soon { border-color: #5a3a0a; border-left-color: #fb923c; background: #130f08; }
+  .color-block.color-inprod { border-color: #1e3a5f; border-left-color: #38bdf8; background: #0d1f35; }
+  .color-block.color-ready { border-color: #14532d; border-left-color: #4ade80; background: #0a1f14; opacity: 0.6; }
   .color-header { display: flex; align-items: center; gap: 10px; padding: 9px 12px; }
   .color-dot { width: 9px; height: 9px; border-radius: 50%; background: #4f6fc4; flex-shrink: 0; }
   .color-block.color-overdue .color-dot { background: #f87171; }
   .color-block.color-soon .color-dot { background: #fb923c; }
+  .color-block.color-inprod .color-dot { background: #38bdf8; }
+  .color-block.color-ready .color-dot { background: #4ade80; }
   .color-name { flex: 1; font-size: 15px; font-weight: 700; color: #ffffff; letter-spacing: -0.2px; }
-  .color-qty { font-size: 22px; font-weight: 800; color: #fff; min-width: 32px; text-align: right; }
+  .color-block.color-ready .color-name { color: #9ca3af; text-decoration: line-through; }
+  .status-icon { font-size: 14px; margin-right: 2px; }
+  .status-icon.inprod { color: #38bdf8; }
+  .status-icon.ready { color: #4ade80; }
+  .color-qty { font-size: 22px; font-weight: 800; color: #fff; min-width: 32px; text-align: right; padding: 2px 6px; border-radius: 6px; }
   .color-due { font-size: 10px; color: #6b7280; min-width: 28px; text-align: right; }
   .color-block.color-overdue .color-due { color: #f87171; }
   .color-block.color-soon .color-due { color: #fb923c; }
+  .progress-bar-wrap { height: 3px; background: #1e2535; margin: 0 12px 6px; border-radius: 2px; }
+  .progress-bar { height: 100%; background: #38bdf8; border-radius: 2px; }
+  .row-extra { padding: 2px 12px 7px; font-size: 11px; }
+  .progress-label { color: #38bdf8; }
+  .ready-label { color: #4ade80; }
   .subs { border-top: 1px solid #1e2235; padding: 5px 10px 6px 24px; display: flex; flex-direction: column; gap: 3px; }
   .sub-row { display: flex; align-items: center; gap: 5px; font-size: 10px; }
   .sub-label { flex: 1; color: #6b7280; display: flex; align-items: center; gap: 4px; }
   .personal-tag { font-size: 9px; background: #2d1f4a; color: #a78bfa; padding: 1px 4px; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.04em; }
   .sub-qty { color: #9ca3af; font-weight: 600; }
   .sub-due { color: #4b5563; min-width: 26px; text-align: right; }
-  .footer { text-align: center; margin-top: 32px; font-size: 11px; color: #374151; }
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #1e2535; color: #e8eaf0; padding: 10px 20px; border-radius: 20px; font-size: 13px; opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: nowrap; z-index: 999; }
+  .toast.show { opacity: 1; }
+  .hint { text-align: center; font-size: 11px; color: #374151; margin-bottom: 20px; }
+  .footer { text-align: center; margin-top: 32px; font-size: 11px; color: #374151; padding-bottom: 40px; }
+
 </style>
 </head>
 <body>
-<div class="header">
-  <div class="header-left">
-    <h1>Production Queue</h1>
-    <p>Updated Jun 15 at 10:56 PM UTC · auto-refreshes every 4 hours</p>
-  </div>
-  <div class="header-stats">
-    <div class="stat"><div class="stat-value">10</div><div class="stat-label">Products</div></div>
-    <div class="stat"><div class="stat-value">21</div><div class="stat-label">Total units</div></div>
-  </div>
-</div>
-<div class="collection-section"><div class="collection-header col-overdue"><span class="collection-name">Sound Supplies</span><span class="collection-meta">1 units · 1 products</span></div><div class="grid"><div class="card overdue"><div class="card-header"><div class="card-title">Thonk PLINKY Synth Shell Case  - Durable 3D-Printed Protective Frame for PLINKY Synthesizer - Custom Color Options.</div><div class="card-meta"><span class="total-badge">1 to make</span><span class="due-badge overdue">due 5/18</span></div></div><div class="colors"><div class="color-block color-overdue"><div class="color-header"><span class="color-dot"></span><span class="color-name">Black</span><span class="color-qty">1</span><span class="color-due">5/18</span></div><div class="subs"><div class="sub-row"><span class="sub-label">Black</span><span class="sub-qty">×1</span><span class="sub-due">5/18</span></div></div></div></div></div></div></div><div class="collection-section"><div class="collection-header "><span class="collection-name">Uncategorized</span><span class="collection-meta">7 units · 3 products</span></div><div class="grid"><div class="card "><div class="card-header"><div class="card-title">Magnetic Feeder Cup Mount: Clear cup with colored magnet for Jumping Spider, Mantis</div><div class="card-meta"><span class="total-badge">5 to make</span><span class="due-badge ">due 6/22</span></div></div><div class="colors"><div class="color-block "><div class="color-header"><span class="color-dot"></span><span class="color-name">Black</span><span class="color-qty">1</span><span class="color-due">6/22</span></div><div class="subs"><div class="sub-row"><span class="sub-label">One Mount, Two Cups</span><span class="sub-qty">×1</span><span class="sub-due">6/22</span></div></div></div><div class="color-block "><div class="color-header"><span class="color-dot"></span><span class="color-name">Purple</span><span class="color-qty">3</span><span class="color-due">6/26</span></div><div class="subs"><div class="sub-row"><span class="sub-label">One Mount, Two Cups</span><span class="sub-qty">×2</span><span class="sub-due">6/26</span></div><div class="sub-row"><span class="sub-label">One Mount, One Cup</span><span class="sub-qty">×1</span><span class="sub-due">6/29</span></div></div></div><div class="color-block "><div class="color-header"><span class="color-dot"></span><span class="color-name">Mint Green</span><span class="color-qty">1</span><span class="color-due">6/26</span></div><div class="subs"><div class="sub-row"><span class="sub-label">One Mount, Two Cups</span><span class="sub-qty">×1</span><span class="sub-due">6/26</span></div></div></div></div></div><div class="card "><div class="card-header"><div class="card-title">Case for Kindle Page Turner  Datafy - RING STYLE Kindle remote control Design - Read description for fit.</div><div class="card-meta"><span class="total-badge">1 to make</span><span class="due-badge ">due 6/22</span></div></div><div class="colors"><div class="color-block "><div class="color-header"><span class="color-dot"></span><span class="color-name">Aperol Spritz</span><span class="color-qty">1</span><span class="color-due">6/22</span></div><div class="subs"><div class="sub-row"><span class="sub-label">Do not add text</span><span class="sub-qty">×1</span><span class="sub-due">6/22</span></div></div></div></div></div><div class="card "><div class="card-header"><div class="card-title">Case for Kindle Page Turner  - SK Syukuyu - The ORIGINAL - Lanyard Compatible Design - More color options - Please read description for fit.</div><div class="card-meta"><span class="total-badge">1 to make</span><span class="due-badge ">due 6/25</span></div></div><div class="colors"><div class="color-block "><div class="color-header"><span class="color-dot"></span><span class="color-name">Bubba-Pop</span><span class="color-qty">1</span><span class="color-due">6/25</span></div><div class="subs"><div class="sub-row"><span class="sub-label">Do not personalize</span><span class="sub-qty">×1</span><span class="sub-due">6/25</span></div></div></div></div></div></div></div><div class="collection-section"><div class="collection-header "><span class="collection-name">Kindle Accessories</span><span class="collection-meta">9 units · 3 products</span></div><div class="grid"><div class="card "><div class="card-header"><div class="card-title">Case for Kindle Page Turner  Datafy - RING STYLE Kindle remote control Design - Read description for fit.</div><div class="card-meta"><span class="total-badge">5 to make</span><span class="due-badge ">due 6/22</span></div></div><div class="colors"><div class="color-block "><div class="color-header"><span class="color-dot"></span><span class="color-name">Green Mist</span><span class="color-qty">2</span><span class="color-due">6/22</span></div><div class="subs"><div class="sub-row"><span class="sub-label">Do not add text</span><span class="sub-qty">×2</span><span class="sub-due">6/22</span></div></div></div><div class="color-block "><div class="color-header"><span class="color-dot"></span><span class="color-name">White</span><span class="color-qty">1</span><span class="color-due">6/22</span></div><div class="subs"><div class="sub-row"><span class="sub-label">Do not add text</span><span class="sub-qty">×1</span><span class="sub-due">6/22</span></div></div></div><div class="color-block "><div class="color-header"><span class="color-dot"></span><span class="color-name">Nightshade</span><span class="color-qty">1</span><span class="color-due">6/24</span></div><div class="subs"><div class="sub-row"><span class="sub-label">Do not add text</span><span class="sub-qty">×1</span><span class="sub-due">6/24</span></div></div></div><div class="color-block "><div class="color-header"><span class="color-dot"></span><span class="color-name">Pink</span><span class="color-qty">1</span><span class="color-due">6/29</span></div><div class="subs"><div class="sub-row"><span class="sub-label">Do not add text</span><span class="sub-qty">×1</span><span class="sub-due">6/29</span></div></div></div></div></div><div class="card "><div class="card-header"><div class="card-title">Case for Kindle Page Turner  Datafy - THE ORIGINAL - Lanyard Compatible Design - Read description for fit. Datify,Sycelu,Oresoc</div><div class="card-meta"><span class="total-badge">3 to make</span><span class="due-badge ">due 6/24</span></div></div><div class="colors"><div class="color-block "><div class="color-header"><span class="color-dot"></span><span class="color-name">Sunset Fade</span><span class="color-qty">1</span><span class="color-due">6/24</span></div><div class="subs"><div class="sub-row"><span class="sub-label">Do not add text</span><span class="sub-qty">×1</span><span class="sub-due">6/24</span></div></div></div><div class="color-block "><div class="color-header"><span class="color-dot"></span><span class="color-name">Eventide</span><span class="color-qty">1</span><span class="color-due">6/24</span></div><div class="subs"><div class="sub-row"><span class="sub-label">Do not add text</span><span class="sub-qty">×1</span><span class="sub-due">6/24</span></div></div></div><div class="color-block "><div class="color-header"><span class="color-dot"></span><span class="color-name">Pink</span><span class="color-qty">1</span><span class="color-due">6/26</span></div><div class="subs"><div class="sub-row"><span class="sub-label">Do not add text</span><span class="sub-qty">×1</span><span class="sub-due">6/26</span></div></div></div></div></div><div class="card "><div class="card-header"><div class="card-title">Case for Kindle Page Turner  Inncarvs - Lanyard Compatible Design - Read description for fit.</div><div class="card-meta"><span class="total-badge">1 to make</span><span class="due-badge ">due 6/29</span></div></div><div class="colors"><div class="color-block "><div class="color-header"><span class="color-dot"></span><span class="color-name">Pastel Vapor</span><span class="color-qty">1</span><span class="color-due">6/29</span></div><div class="subs"><div class="sub-row"><span class="sub-label">Do not add text</span><span class="sub-qty">×1</span><span class="sub-due">6/29</span></div></div></div></div></div></div></div><div class="collection-section"><div class="collection-header "><span class="collection-name">Pet Supplies</span><span class="collection-meta">4 units · 3 products</span></div><div class="grid"><div class="card "><div class="card-header"><div class="card-title">CO2 Cylinder stand 24 oz UNS version: Aquarium stable stand for paintball tank</div><div class="card-meta"><span class="total-badge">1 to make</span><span class="due-badge ">due 6/29</span></div></div><div class="colors"><div class="color-block "><div class="color-header"><span class="color-dot"></span><span class="color-name">White</span><span class="color-qty">1</span><span class="color-due">6/29</span></div></div></div></div><div class="card "><div class="card-header"><div class="card-title">Jumping Spider Ledge - Mushroom (Amanita caesarea) - Magnetized shelf for enrichment - Spider Perch</div><div class="card-meta"><span class="total-badge">1 to make</span><span class="due-badge ">due 6/29</span></div></div><div class="colors"><div class="color-block "><div class="color-header"><span class="color-dot"></span><span class="color-name">Chartreuse</span><span class="color-qty">1</span><span class="color-due">6/29</span></div></div></div></div><div class="card "><div class="card-header"><div class="card-title">Magnetic Feeder Cup Mount: Clear cup with colored magnet for Jumping Spider, Mantis</div><div class="card-meta"><span class="total-badge">2 to make</span><span class="due-badge ">due 6/30</span></div></div><div class="colors"><div class="color-block "><div class="color-header"><span class="color-dot"></span><span class="color-name">Earthy Green</span><span class="color-qty">1</span><span class="color-due">6/30</span></div><div class="subs"><div class="sub-row"><span class="sub-label">One Mount, One Cup</span><span class="sub-qty">×1</span><span class="sub-due">6/30</span></div></div></div><div class="color-block "><div class="color-header"><span class="color-dot"></span><span class="color-name">Black</span><span class="color-qty">1</span><span class="color-due">6/30</span></div><div class="subs"><div class="sub-row"><span class="sub-label">One Mount, One Cup</span><span class="sub-qty">×1</span><span class="sub-due">6/30</span></div></div></div></div></div></div></div>
-<div class="footer">Shopify · Unfulfilled open orders only</div>
+<div class="header"><div class="header-left"><h1>Production Queue</h1><p>Updated Jun 15 at 11:05 PM UTC &middot; auto-refreshes every 15 min</p></div><div class="header-stats"><div class="stat"><div class="stat-value">10</div><div class="stat-label">Products</div></div><div class="stat"><div class="stat-value">21</div><div class="stat-label">Total units</div></div></div></div>
+<p class="hint">Tap a color row to cycle status &middot; Tap the quantity number to update progress</p>
+<div class="collection-section"><div class="collection-header col-overdue"><span class="collection-name">Sound Supplies</span><span class="collection-meta">1 units &middot; 1 products</span></div><div class="grid"><div class="card overdue"><div class="card-header"><div class="card-title">Thonk PLINKY Synth Shell Case  - Durable 3D-Printed Protective Frame for PLINKY Synthesizer - Custom Color Options.</div><div class="card-meta"><span class="total-badge">1 to make</span><span class="due-badge overdue">due 5/18</span></div></div><div class="colors"><div class="color-block color-overdue" onclick="cycleStatus('77c8981b4d946be0', 1)" data-id="77c8981b4d946be0" data-total="1" data-status="todo" data-qty-done="0"><div class="color-header"><span class="color-dot"></span><span class="color-name">Black</span><span class="color-qty" onclick="event.stopPropagation();promptQty('77c8981b4d946be0',1)">1</span><span class="color-due">5/18</span></div><div class="subs"><div class="sub-row"><span class="sub-label">Black</span><span class="sub-qty">x1</span><span class="sub-due">5/18</span></div></div></div></div></div></div></div><div class="collection-section"><div class="collection-header "><span class="collection-name">Uncategorized</span><span class="collection-meta">7 units &middot; 3 products</span></div><div class="grid"><div class="card "><div class="card-header"><div class="card-title">Magnetic Feeder Cup Mount: Clear cup with colored magnet for Jumping Spider, Mantis</div><div class="card-meta"><span class="total-badge">5 to make</span><span class="due-badge ">due 6/22</span></div></div><div class="colors"><div class="color-block " onclick="cycleStatus('4f832941e408e6f9', 1)" data-id="4f832941e408e6f9" data-total="1" data-status="todo" data-qty-done="0"><div class="color-header"><span class="color-dot"></span><span class="color-name">Black</span><span class="color-qty" onclick="event.stopPropagation();promptQty('4f832941e408e6f9',1)">1</span><span class="color-due">6/22</span></div><div class="subs"><div class="sub-row"><span class="sub-label">One Mount, Two Cups</span><span class="sub-qty">x1</span><span class="sub-due">6/22</span></div></div></div><div class="color-block " onclick="cycleStatus('fbe63418f7946018', 3)" data-id="fbe63418f7946018" data-total="3" data-status="todo" data-qty-done="0"><div class="color-header"><span class="color-dot"></span><span class="color-name">Purple</span><span class="color-qty" onclick="event.stopPropagation();promptQty('fbe63418f7946018',3)">3</span><span class="color-due">6/26</span></div><div class="subs"><div class="sub-row"><span class="sub-label">One Mount, Two Cups</span><span class="sub-qty">x2</span><span class="sub-due">6/26</span></div><div class="sub-row"><span class="sub-label">One Mount, One Cup</span><span class="sub-qty">x1</span><span class="sub-due">6/29</span></div></div></div><div class="color-block " onclick="cycleStatus('2ea77b081dcbb1a5', 1)" data-id="2ea77b081dcbb1a5" data-total="1" data-status="todo" data-qty-done="0"><div class="color-header"><span class="color-dot"></span><span class="color-name">Mint Green</span><span class="color-qty" onclick="event.stopPropagation();promptQty('2ea77b081dcbb1a5',1)">1</span><span class="color-due">6/26</span></div><div class="subs"><div class="sub-row"><span class="sub-label">One Mount, Two Cups</span><span class="sub-qty">x1</span><span class="sub-due">6/26</span></div></div></div></div></div><div class="card "><div class="card-header"><div class="card-title">Case for Kindle Page Turner  Datafy - RING STYLE Kindle remote control Design - Read description for fit.</div><div class="card-meta"><span class="total-badge">1 to make</span><span class="due-badge ">due 6/22</span></div></div><div class="colors"><div class="color-block " onclick="cycleStatus('2fb30cb1d9f4a9fe', 1)" data-id="2fb30cb1d9f4a9fe" data-total="1" data-status="todo" data-qty-done="0"><div class="color-header"><span class="color-dot"></span><span class="color-name">Aperol Spritz</span><span class="color-qty" onclick="event.stopPropagation();promptQty('2fb30cb1d9f4a9fe',1)">1</span><span class="color-due">6/22</span></div><div class="subs"><div class="sub-row"><span class="sub-label">Do not add text</span><span class="sub-qty">x1</span><span class="sub-due">6/22</span></div></div></div></div></div><div class="card "><div class="card-header"><div class="card-title">Case for Kindle Page Turner  - SK Syukuyu - The ORIGINAL - Lanyard Compatible Design - More color options - Please read description for fit.</div><div class="card-meta"><span class="total-badge">1 to make</span><span class="due-badge ">due 6/25</span></div></div><div class="colors"><div class="color-block " onclick="cycleStatus('9c369f451a4acc2b', 1)" data-id="9c369f451a4acc2b" data-total="1" data-status="todo" data-qty-done="0"><div class="color-header"><span class="color-dot"></span><span class="color-name">Bubba-Pop</span><span class="color-qty" onclick="event.stopPropagation();promptQty('9c369f451a4acc2b',1)">1</span><span class="color-due">6/25</span></div><div class="subs"><div class="sub-row"><span class="sub-label">Do not personalize</span><span class="sub-qty">x1</span><span class="sub-due">6/25</span></div></div></div></div></div></div></div><div class="collection-section"><div class="collection-header "><span class="collection-name">Kindle Accessories</span><span class="collection-meta">9 units &middot; 3 products</span></div><div class="grid"><div class="card "><div class="card-header"><div class="card-title">Case for Kindle Page Turner  Datafy - RING STYLE Kindle remote control Design - Read description for fit.</div><div class="card-meta"><span class="total-badge">5 to make</span><span class="due-badge ">due 6/22</span></div></div><div class="colors"><div class="color-block " onclick="cycleStatus('caa5b323dce8062e', 2)" data-id="caa5b323dce8062e" data-total="2" data-status="todo" data-qty-done="0"><div class="color-header"><span class="color-dot"></span><span class="color-name">Green Mist</span><span class="color-qty" onclick="event.stopPropagation();promptQty('caa5b323dce8062e',2)">2</span><span class="color-due">6/22</span></div><div class="subs"><div class="sub-row"><span class="sub-label">Do not add text</span><span class="sub-qty">x2</span><span class="sub-due">6/22</span></div></div></div><div class="color-block " onclick="cycleStatus('568470f0f16eb5a4', 1)" data-id="568470f0f16eb5a4" data-total="1" data-status="todo" data-qty-done="0"><div class="color-header"><span class="color-dot"></span><span class="color-name">White</span><span class="color-qty" onclick="event.stopPropagation();promptQty('568470f0f16eb5a4',1)">1</span><span class="color-due">6/22</span></div><div class="subs"><div class="sub-row"><span class="sub-label">Do not add text</span><span class="sub-qty">x1</span><span class="sub-due">6/22</span></div></div></div><div class="color-block " onclick="cycleStatus('cc4894b801af1544', 1)" data-id="cc4894b801af1544" data-total="1" data-status="todo" data-qty-done="0"><div class="color-header"><span class="color-dot"></span><span class="color-name">Nightshade</span><span class="color-qty" onclick="event.stopPropagation();promptQty('cc4894b801af1544',1)">1</span><span class="color-due">6/24</span></div><div class="subs"><div class="sub-row"><span class="sub-label">Do not add text</span><span class="sub-qty">x1</span><span class="sub-due">6/24</span></div></div></div><div class="color-block " onclick="cycleStatus('777f30dd5eab715d', 1)" data-id="777f30dd5eab715d" data-total="1" data-status="todo" data-qty-done="0"><div class="color-header"><span class="color-dot"></span><span class="color-name">Pink</span><span class="color-qty" onclick="event.stopPropagation();promptQty('777f30dd5eab715d',1)">1</span><span class="color-due">6/29</span></div><div class="subs"><div class="sub-row"><span class="sub-label">Do not add text</span><span class="sub-qty">x1</span><span class="sub-due">6/29</span></div></div></div></div></div><div class="card "><div class="card-header"><div class="card-title">Case for Kindle Page Turner  Datafy - THE ORIGINAL - Lanyard Compatible Design - Read description for fit. Datify,Sycelu,Oresoc</div><div class="card-meta"><span class="total-badge">3 to make</span><span class="due-badge ">due 6/24</span></div></div><div class="colors"><div class="color-block " onclick="cycleStatus('6f3076338194eda5', 1)" data-id="6f3076338194eda5" data-total="1" data-status="todo" data-qty-done="0"><div class="color-header"><span class="color-dot"></span><span class="color-name">Sunset Fade</span><span class="color-qty" onclick="event.stopPropagation();promptQty('6f3076338194eda5',1)">1</span><span class="color-due">6/24</span></div><div class="subs"><div class="sub-row"><span class="sub-label">Do not add text</span><span class="sub-qty">x1</span><span class="sub-due">6/24</span></div></div></div><div class="color-block " onclick="cycleStatus('91dcffc124351f12', 1)" data-id="91dcffc124351f12" data-total="1" data-status="todo" data-qty-done="0"><div class="color-header"><span class="color-dot"></span><span class="color-name">Eventide</span><span class="color-qty" onclick="event.stopPropagation();promptQty('91dcffc124351f12',1)">1</span><span class="color-due">6/24</span></div><div class="subs"><div class="sub-row"><span class="sub-label">Do not add text</span><span class="sub-qty">x1</span><span class="sub-due">6/24</span></div></div></div><div class="color-block " onclick="cycleStatus('15db683b67b4ffbc', 1)" data-id="15db683b67b4ffbc" data-total="1" data-status="todo" data-qty-done="0"><div class="color-header"><span class="color-dot"></span><span class="color-name">Pink</span><span class="color-qty" onclick="event.stopPropagation();promptQty('15db683b67b4ffbc',1)">1</span><span class="color-due">6/26</span></div><div class="subs"><div class="sub-row"><span class="sub-label">Do not add text</span><span class="sub-qty">x1</span><span class="sub-due">6/26</span></div></div></div></div></div><div class="card "><div class="card-header"><div class="card-title">Case for Kindle Page Turner  Inncarvs - Lanyard Compatible Design - Read description for fit.</div><div class="card-meta"><span class="total-badge">1 to make</span><span class="due-badge ">due 6/29</span></div></div><div class="colors"><div class="color-block " onclick="cycleStatus('0dddc78c2ea6c891', 1)" data-id="0dddc78c2ea6c891" data-total="1" data-status="todo" data-qty-done="0"><div class="color-header"><span class="color-dot"></span><span class="color-name">Pastel Vapor</span><span class="color-qty" onclick="event.stopPropagation();promptQty('0dddc78c2ea6c891',1)">1</span><span class="color-due">6/29</span></div><div class="subs"><div class="sub-row"><span class="sub-label">Do not add text</span><span class="sub-qty">x1</span><span class="sub-due">6/29</span></div></div></div></div></div></div></div><div class="collection-section"><div class="collection-header "><span class="collection-name">Pet Supplies</span><span class="collection-meta">4 units &middot; 3 products</span></div><div class="grid"><div class="card "><div class="card-header"><div class="card-title">CO2 Cylinder stand 24 oz UNS version: Aquarium stable stand for paintball tank</div><div class="card-meta"><span class="total-badge">1 to make</span><span class="due-badge ">due 6/29</span></div></div><div class="colors"><div class="color-block " onclick="cycleStatus('c8262a0fd143ed6c', 1)" data-id="c8262a0fd143ed6c" data-total="1" data-status="todo" data-qty-done="0"><div class="color-header"><span class="color-dot"></span><span class="color-name">White</span><span class="color-qty" onclick="event.stopPropagation();promptQty('c8262a0fd143ed6c',1)">1</span><span class="color-due">6/29</span></div></div></div></div><div class="card "><div class="card-header"><div class="card-title">Jumping Spider Ledge - Mushroom (Amanita caesarea) - Magnetized shelf for enrichment - Spider Perch</div><div class="card-meta"><span class="total-badge">1 to make</span><span class="due-badge ">due 6/29</span></div></div><div class="colors"><div class="color-block " onclick="cycleStatus('53c3b8e2744c105c', 1)" data-id="53c3b8e2744c105c" data-total="1" data-status="todo" data-qty-done="0"><div class="color-header"><span class="color-dot"></span><span class="color-name">Chartreuse</span><span class="color-qty" onclick="event.stopPropagation();promptQty('53c3b8e2744c105c',1)">1</span><span class="color-due">6/29</span></div></div></div></div><div class="card "><div class="card-header"><div class="card-title">Magnetic Feeder Cup Mount: Clear cup with colored magnet for Jumping Spider, Mantis</div><div class="card-meta"><span class="total-badge">2 to make</span><span class="due-badge ">due 6/30</span></div></div><div class="colors"><div class="color-block " onclick="cycleStatus('6c532c7070a9e366', 1)" data-id="6c532c7070a9e366" data-total="1" data-status="todo" data-qty-done="0"><div class="color-header"><span class="color-dot"></span><span class="color-name">Earthy Green</span><span class="color-qty" onclick="event.stopPropagation();promptQty('6c532c7070a9e366',1)">1</span><span class="color-due">6/30</span></div><div class="subs"><div class="sub-row"><span class="sub-label">One Mount, One Cup</span><span class="sub-qty">x1</span><span class="sub-due">6/30</span></div></div></div><div class="color-block " onclick="cycleStatus('4f832941e408e6f9', 1)" data-id="4f832941e408e6f9" data-total="1" data-status="todo" data-qty-done="0"><div class="color-header"><span class="color-dot"></span><span class="color-name">Black</span><span class="color-qty" onclick="event.stopPropagation();promptQty('4f832941e408e6f9',1)">1</span><span class="color-due">6/30</span></div><div class="subs"><div class="sub-row"><span class="sub-label">One Mount, One Cup</span><span class="sub-qty">x1</span><span class="sub-due">6/30</span></div></div></div></div></div></div></div>
+<div class="footer">Shopify &middot; Unfulfilled open orders only</div>
+<div class="toast" id="toast"></div>
+<script>
+
+const SUPABASE_URL = "https://nbtimzazdygxcyebhbxo.supabase.co";
+const SUPABASE_KEY = "sb_publishable_QkGybw7yZp9vLu78tyAx3A_eXfprZHd";
+
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 2000);
+}
+
+async function saveStatus(id, status, qty_done) {
+  const resp = await fetch(SUPABASE_URL + "/rest/v1/production_status", {
+    method: "POST",
+    headers: {
+      "apikey": SUPABASE_KEY,
+      "Authorization": "Bearer " + SUPABASE_KEY,
+      "Content-Type": "application/json",
+      "Prefer": "resolution=merge-duplicates"
+    },
+    body: JSON.stringify({ id, status, qty_done, updated_at: new Date().toISOString() })
+  });
+  if (!resp.ok) showToast("Save failed");
+}
+
+function cycleStatus(id, total) {
+  const el = document.querySelector('[data-id="' + id + '"]');
+  if (!el) return;
+  const current = el.dataset.status || "todo";
+  const next = current === "todo" ? "in_production" : current === "in_production" ? "ready_to_ship" : "todo";
+  const qty = next === "ready_to_ship" ? total : 0;
+  applyStatus(el, next, qty, total);
+  saveStatus(id, next, qty);
+  const labels = { todo: "To Do", in_production: "In Production", ready_to_ship: "Ready to Ship" };
+  showToast(labels[next]);
+}
+
+function promptQty(id, total) {
+  const el = document.querySelector('[data-id="' + id + '"]');
+  if (!el) return;
+  const current = parseInt(el.dataset.qtyDone || 0);
+  const input = prompt("How many complete? (of " + total + " total)", current);
+  if (input === null) return;
+  const qty = Math.min(total, Math.max(0, parseInt(input) || 0));
+  const status = qty >= total ? "ready_to_ship" : qty > 0 ? "in_production" : "todo";
+  applyStatus(el, status, qty, total);
+  saveStatus(id, status, qty);
+  showToast(qty + " of " + total + " done");
+}
+
+function applyStatus(el, status, qty_done, total) {
+  el.dataset.status = status;
+  el.dataset.qtyDone = qty_done;
+  el.classList.remove("color-overdue","color-soon","color-inprod","color-ready");
+  if (status === "in_production") el.classList.add("color-inprod");
+  else if (status === "ready_to_ship") el.classList.add("color-ready");
+
+  const nameEl = el.querySelector(".color-name");
+  if (nameEl) nameEl.style.textDecoration = status === "ready_to_ship" ? "line-through" : "";
+
+  let icon = el.querySelector(".status-icon");
+  if (status === "in_production") {
+    if (!icon) { icon = document.createElement("span"); icon.className = "status-icon inprod"; el.querySelector(".color-qty").before(icon); }
+    icon.className = "status-icon inprod"; icon.innerHTML = "&#9881;";
+  } else if (status === "ready_to_ship") {
+    if (!icon) { icon = document.createElement("span"); icon.className = "status-icon ready"; el.querySelector(".color-qty").before(icon); }
+    icon.className = "status-icon ready"; icon.innerHTML = "&#10003;";
+  } else { if (icon) icon.remove(); }
+
+  let pb = el.querySelector(".progress-bar-wrap");
+  let re = el.querySelector(".row-extra");
+  if (status === "in_production") {
+    const pct = Math.min(100, Math.round(qty_done / total * 100));
+    const rem = total - qty_done;
+    if (!pb) { pb = document.createElement("div"); pb.className = "progress-bar-wrap"; pb.innerHTML = '<div class="progress-bar"></div>'; el.querySelector(".color-header").after(pb); }
+    pb.querySelector(".progress-bar").style.width = pct + "%";
+    if (!re) { re = document.createElement("div"); re.className = "row-extra"; pb.after(re); }
+    re.innerHTML = '<span class="progress-label">' + qty_done + ' of ' + total + ' done &middot; ' + rem + ' left</span>';
+  } else if (status === "ready_to_ship") {
+    if (pb) pb.remove();
+    if (!re) { re = document.createElement("div"); re.className = "row-extra"; el.querySelector(".color-header").after(re); }
+    re.innerHTML = '<span class="ready-label">Ready to ship</span>';
+  } else {
+    if (pb) pb.remove();
+    if (re) re.remove();
+  }
+}
+
+</script>
 </body>
 </html>
