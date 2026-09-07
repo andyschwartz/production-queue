@@ -113,26 +113,26 @@ async function saveStatus(id, status, qty_done, qty_at_save) {
 }
 
 function cycleStatus(id, total) {
-  const el = document.querySelector('[data-id="' + id + '"]');
-  if (!el) return;
-  const current = el.dataset.status || "todo";
+  const els = document.querySelectorAll('[data-id="' + id + '"]');
+  if (!els.length) return;
+  const current = els[0].dataset.status || "todo";
   const next = current === "todo" ? "in_production" : current === "in_production" ? "ready_to_ship" : "todo";
   const qty = next === "ready_to_ship" ? total : 0;
-  applyStatus(el, next, qty, total);
+  els.forEach(function(el) { applyStatus(el, next, qty, total); });
   saveStatus(id, next, qty, total);
   const labels = { todo: "To Do", in_production: "⚙ In Production", ready_to_ship: "✓ Ready to Ship" };
   showToast(labels[next]);
 }
 
 function promptQty(id, total) {
-  const el = document.querySelector('[data-id="' + id + '"]');
-  if (!el) return;
-  const current = parseInt(el.dataset.qtyDone || 0);
+  const els = document.querySelectorAll('[data-id="' + id + '"]');
+  if (!els.length) return;
+  const current = parseInt(els[0].dataset.qtyDone || 0);
   const input = prompt("How many complete? (of " + total + " total)", current);
   if (input === null) return;
   const qty = Math.min(total, Math.max(0, parseInt(input) || 0));
   const status = qty >= total ? "ready_to_ship" : qty > 0 ? "in_production" : "todo";
-  applyStatus(el, status, qty, total);
+  els.forEach(function(el) { applyStatus(el, status, qty, total); });
   saveStatus(id, status, qty, total);
   showToast(qty + " of " + total + " done");
 }
